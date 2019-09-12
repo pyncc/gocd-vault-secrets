@@ -103,6 +103,8 @@
   [_ _ _]
   ;; TODO: how does the plugin authenticate?
   [{:key :vault_addr
+    :metadata {:required true, :secure false}}
+   {:key :vault_aws_iam_role
     :metadata {:required true, :secure false}}])
 
 
