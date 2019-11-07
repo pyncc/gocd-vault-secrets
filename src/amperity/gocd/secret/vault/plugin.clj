@@ -188,9 +188,10 @@
     (log/logger "info" (format "validating configuration, %d errors found" (count errors-found)) nil)
     (if (and (empty? errors-found)
              ;; Need to Authenticate?
-             (not (and (= (:api-url @client) (:vault_addr data))
-                       (= (:auth-type @client) (:auth_method data))
-                       (= (:client-token @client) (:vault_token data)))))
+             (or (not= (:api-url @client) (:vault_addr data))
+                 (not= (:auth-type @client) (:auth_method data))
+                 (and (= "token" (:auth_method data))
+                      (not= (:client-token @client) (:vault_token data)))))
       ;; Authenticate Vault client
       (try
         (authenticate-client-from-inputs! client data)
