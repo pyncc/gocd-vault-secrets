@@ -159,6 +159,7 @@
   - `client` An atom containing the Vault Client you wish to authenticate, may contain nil if you want a new client.
   - `inputs` A map containing the user inputted settings for the plugin"
   [client inputs]
+  (log/logger "info" (format "authenticating client @ %s" (:vault_addr inputs)) nil)
   (when-not (= (:api-url @client) (:vault_addr inputs))
     (reset! client (vault/new-client (:vault_addr inputs))))
   (case (:auth_method inputs)
@@ -184,6 +185,7 @@
                         {:key field-key
                          :message error-message}))
         errors-found (keep input-error (keys input-schema))]
+    (log/logger "info" (format "validating configuration, %d errors found" (count errors-found)) nil)
     (if (and (empty? errors-found)
              ;; Need to Authenticate?
              (not (and (= (:api-url @client) (:vault_addr data))
@@ -237,6 +239,7 @@
 ;; for secrets from the external Secret Manager.
 (defmethod handle-request "go.cd.secrets.secrets-lookup"
   [client _ data]
+  (log/logger "info" (format "looking up %d secret keys" (count (:keys data))) nil)
   (try
     (when-not @client
       (authenticate-client-from-inputs! client (:configuration data)))
